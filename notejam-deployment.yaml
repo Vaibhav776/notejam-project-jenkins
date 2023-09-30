@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notejam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notejam
+  template:
+    metadata:
+      labels:
+        app: notejam
+    spec:
+      containers:
+        - name: app
+          image: xvaikum/notejam-app:v1
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+
+
+

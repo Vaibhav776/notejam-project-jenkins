@@ -1,0 +1,30 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  K8S_CLUSTER_KUBECONFIG: $HOME/.kube/config  
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login -u xvaikum -p Vaibhav@1994
+    - docker build -t xvaikum/notejam-app:v1 .
+    - docker push xvaikum/notejam-app:v1
+  only:
+    - develop
+  tags:
+    - stable
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl --kubeconfig=$K8S_CLUSTER_KUBECONFIG apply -f notejam-deployment.yaml
+    - kubectl --kubeconfig=$K8S_CLUSTER_KUBECONFIG apply -f notejam-service.yaml
+    - kubectl --kubeconfig=$K8S_CLUSTER_KUBECONFIG get pods
+    - kubectl --kubeconfig=$K8S_CLUSTER_KUBECONFIG apply -f ingress.yaml
+  only:
+     - develop
